@@ -2,7 +2,7 @@ import { jsonFetch } from "@/lib/fetcher"
 import { DoctorCard } from "@/components/doctor-card"
 
 export default async function DoctorsListPage() {
-  const doctors = await jsonFetch<any[]>("/api/doctors", { cache: "no-store" as any })
+  const doctors = await jsonFetch<any[]>(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/doctors`, { cache: "no-store" as any })
   return (
     <main className="max-w-5xl mx-auto p-6 grid gap-4">
       <h1 className="text-2xl font-semibold">Doctors</h1>

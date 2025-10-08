@@ -39,8 +39,8 @@ export function verifyRefreshToken(token: string) {
   return jwt.verify(token, JWT_REFRESH_SECRET) as JWTPayload
 }
 
-export function setAuthCookies(access: string, refresh: string) {
-  const c = cookies()
+export async function setAuthCookies(access: string, refresh: string) {
+  const c = await cookies()
   c.set("access_token", access, {
     httpOnly: true,
     sameSite: "lax",
@@ -57,25 +57,25 @@ export function setAuthCookies(access: string, refresh: string) {
   })
 }
 
-export function clearAuthCookies() {
-  const c = cookies()
+export async function clearAuthCookies() {
+  const c = await cookies()
   c.delete("access_token")
   c.delete("refresh_token")
 }
 
-export function getTokenFromCookies() {
-  const c = cookies()
+export async function getTokenFromCookies() {
+  const c = await cookies()
   return c.get("access_token")?.value
 }
 
-export function getRefreshFromCookies() {
-  const c = cookies()
+export async function getRefreshFromCookies() {
+  const c = await cookies()
   return c.get("refresh_token")?.value
 }
 
-export function getClientIP(req?: NextRequest) {
+export async function getClientIP(req?: NextRequest) {
   // best-effort for rate limiting keys
-  const h = req ? req.headers : headers()
+  const h = req ? req.headers : await headers()
   return (h.get("x-forwarded-for") || h.get("x-real-ip") || "unknown").split(",")[0].trim()
 }
 
@@ -89,14 +89,14 @@ export type CurrentUser = {
 }
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
-  const token = getTokenFromCookies()
+  const token = await getTokenFromCookies()
   if (!token) return null
   try {
     const payload = verifyAccessToken(token)
     await connectDB()
     const doc = await User.findById(payload.sub).lean()
-    if (!doc) return null
-    const fullName = doc?.name?.first && doc?.name?.last ? `${doc.name.first} ${doc.name.last}` : doc?.email || "User"
+    if (!doc || Array.isArray(doc)) return null
+    const fullName = doc.name?.first && doc.name?.last ? `${doc.name.first} ${doc.name.last}` : doc.email || "User"
     return {
       id: String(doc._id),
       email: doc.email,
@@ -109,7 +109,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 }
 
 export async function requireAuth(allowed?: Role[]) {
-  const token = getTokenFromCookies()
+  const token = await getTokenFromCookies()
   if (!token) return null
   try {
     const payload = verifyAccessToken(token)

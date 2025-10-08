@@ -34,6 +34,7 @@ export function LoginForm() {
       return
     }
     router.push("/dashboard")
+    console.log("done")
   }
 
   return (
