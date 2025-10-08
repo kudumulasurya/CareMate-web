@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 import { cookies, headers } from "next/headers"
 import type { NextRequest } from "next/server"
+import { connectDB } from "@/lib/db" // add DB connection for fetching user
+import { User } from "@/models/User" // add User model import
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret"
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "dev_refresh_secret"
@@ -78,6 +80,33 @@ export function getClientIP(req?: NextRequest) {
 }
 
 export type Role = "admin" | "doctor" | "user"
+
+export type CurrentUser = {
+  id: string
+  email: string
+  role: "admin" | "doctor" | "user"
+  name: string
+}
+
+export async function getCurrentUser(): Promise<CurrentUser | null> {
+  const token = getTokenFromCookies()
+  if (!token) return null
+  try {
+    const payload = verifyAccessToken(token)
+    await connectDB()
+    const doc = await User.findById(payload.sub).lean()
+    if (!doc) return null
+    const fullName = doc?.name?.first && doc?.name?.last ? `${doc.name.first} ${doc.name.last}` : doc?.email || "User"
+    return {
+      id: String(doc._id),
+      email: doc.email,
+      role: doc.role,
+      name: fullName,
+    }
+  } catch {
+    return null
+  }
+}
 
 export async function requireAuth(allowed?: Role[]) {
   const token = getTokenFromCookies()
