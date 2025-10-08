@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server"
 import { connectDB } from "@/lib/db"
 import { loginSchema } from "@/lib/validation"
 import { User } from "@/models/User"
-import { comparePassword, setAuthCookies, signAccessToken, signRefreshToken } from "@/lib/auth"
+import { comparePassword, signAccessToken, signRefreshToken, setAuthCookiesOnResponse } from "@/lib/auth"
 import { error, json, requireRateLimit } from "@/app/api/_utils"
 
 export async function POST(req: NextRequest) {
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
   const payload = { sub: String(user._id), role: user.role, email: user.email }
   const access = signAccessToken(payload)
   const refresh = signRefreshToken(payload)
-  setAuthCookies(access, refresh)
-  return json({ success: true })
+  const res = json({ success: true })
+  setAuthCookiesOnResponse(res, access, refresh)
+  return res
 }

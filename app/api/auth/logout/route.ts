@@ -1,7 +1,8 @@
 import { json } from "@/app/api/_utils"
-import { clearAuthCookies } from "@/lib/auth"
+import { clearAuthCookiesOnResponse } from "@/lib/auth"
 
 export async function POST() {
-  clearAuthCookies()
-  return json({ success: true })
+  const res = json({ success: true })
+  clearAuthCookiesOnResponse(res)
+  return res
 }

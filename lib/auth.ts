@@ -4,6 +4,7 @@ import { cookies, headers } from "next/headers"
 import type { NextRequest } from "next/server"
 import { connectDB } from "@/lib/db" // add DB connection for fetching user
 import { User } from "@/models/User" // add User model import
+import type { NextResponse } from "next/server" // add NextResponse for response-bound cookies
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret"
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "dev_refresh_secret"
@@ -73,9 +74,9 @@ export async function getRefreshFromCookies() {
   return c.get("refresh_token")?.value
 }
 
-export async function getClientIP(req?: NextRequest) {
+export function getClientIP(req?: NextRequest) {
   // best-effort for rate limiting keys
-  const h = req ? req.headers : await headers()
+  const h = req ? req.headers : headers()
   return (h.get("x-forwarded-for") || h.get("x-real-ip") || "unknown").split(",")[0].trim()
 }
 
@@ -118,4 +119,30 @@ export async function requireAuth(allowed?: Role[]) {
   } catch {
     return null
   }
+}
+
+export function setAuthCookiesOnResponse(res: NextResponse, access: string, refresh: string) {
+  const isProd = process.env.NODE_ENV === "production"
+  res.cookies.set("access_token", access, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isProd,
+    path: "/",
+    maxAge: 60 * 15,
+  })
+  res.cookies.set("refresh_token", refresh, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isProd,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  })
+  return res
+}
+
+export function clearAuthCookiesOnResponse(res: NextResponse) {
+  // delete both cookies on the response
+  res.cookies.delete("access_token")
+  res.cookies.delete("refresh_token")
+  return res
 }
