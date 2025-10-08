@@ -20,14 +20,31 @@ export default async function SiteHeader() {
           </Link>
           {user ? (
             <>
-              <Link href="/dashboard" className="text-sm hover:underline">
-                Dashboard
-              </Link>
-              {user.role === "admin" ? (
-                <Link href="/admin/approve-doctors" className="text-sm hover:underline">
-                  Approvals
+              {user.role === "admin" && (
+                <>
+                  <Link href="/dashboard/admin" className="text-sm hover:underline">
+                    Admin Dashboard
+                  </Link>
+                  <Link href="/admin/approve-doctors" className="text-sm hover:underline">
+                    Approvals
+                  </Link>
+                </>
+              )}
+              {user.role === "doctor" && (
+                <Link href="/dashboard/doctor" className="text-sm hover:underline">
+                  Doctor Dashboard
                 </Link>
-              ) : null}
+              )}
+              {user.role === "user" && (
+                <>
+                  <Link href="/dashboard/user" className="text-sm hover:underline">
+                    My Dashboard
+                  </Link>
+                  <Link href="/appointments" className="text-sm hover:underline">
+                    My Appointments
+                  </Link>
+                </>
+              )}
               <span className="text-sm text-muted-foreground">Hi, {user.name}</span>
               <LogoutButton />
             </>

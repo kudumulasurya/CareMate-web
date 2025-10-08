@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 
 export default function DoctorDetailPage({ params }: { params: { id: string } }) {
   const { data } = useSWR(`/api/doctors/${params.id}`, (url) => jsonFetch(url))
+  const { data: me } = useSWR("/api/auth/me", (url) => jsonFetch(url))
   const router = useRouter()
 
   async function book(start: Date, end: Date) {
@@ -46,10 +47,16 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
           <CardTitle>Book an appointment</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <AvailabilityCalendar availableSlots={data.doctorProfile?.availableSlots || []} onPick={book} />
-          <Button variant="secondary" onClick={() => router.push("/appointments")}>
-            View my appointments
-          </Button>
+          {me?.role === "admin" ? (
+            <p className="text-sm text-muted-foreground">Admins cannot book appointments.</p>
+          ) : (
+            <>
+              <AvailabilityCalendar availableSlots={data.doctorProfile?.availableSlots || []} onPick={book} />
+              <Button variant="secondary" onClick={() => router.push("/appointments")}>
+                View my appointments
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
     </main>

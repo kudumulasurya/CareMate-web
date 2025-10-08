@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import dayjs from "dayjs"
 import { Button } from "@/components/ui/button"
 
@@ -10,7 +10,17 @@ export function AvailabilityCalendar({
   availableSlots: { dayOfWeek: number; startTime: string; endTime: string; slotDurationMins: number }[]
   onPick: (start: Date, end: Date) => void
 }) {
-  const [date, setDate] = useState<string>(dayjs().format("YYYY-MM-DD"))
+  const initialDate = useMemo(() => {
+    const start = dayjs()
+    for (let i = 0; i < 14; i++) {
+      const d = start.add(i, "day")
+      const defs = availableSlots?.filter((s) => s.dayOfWeek === d.day()) || []
+      if (defs.length > 0) return d.format("YYYY-MM-DD")
+    }
+    return start.format("YYYY-MM-DD")
+  }, [availableSlots])
+
+  const [date, setDate] = useState<string>(initialDate)
 
   const slots: { start: Date; end: Date }[] = []
   const d = dayjs(date)
