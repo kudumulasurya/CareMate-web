@@ -14,7 +14,7 @@ type Values = z.infer<typeof registerDoctorSchema>
 export default function RegisterDoctorPage() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const { register, handleSubmit, formState } = useForm<Values>({
+  const { register, handleSubmit, formState, setValue } = useForm<Values>({
     resolver: zodResolver(registerDoctorSchema),
     defaultValues: {
       name: { first: "", last: "" },
@@ -64,8 +64,7 @@ export default function RegisterDoctorPage() {
                   .split(",")
                   .map((x) => x.trim())
                   .filter(Boolean)
-                ;(e.target as any).value = e.target.value
-                // no-op; handled at submit by reading form state
+                setValue("doctorProfile.qualifications", arr as any, { shouldDirty: true })
               }}
             />
             {error ? <p className="text-destructive text-sm">{error}</p> : null}

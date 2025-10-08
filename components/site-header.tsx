@@ -23,6 +23,11 @@ export default async function SiteHeader() {
               <Link href="/dashboard" className="text-sm hover:underline">
                 Dashboard
               </Link>
+              {user.role === "admin" ? (
+                <Link href="/admin/approve-doctors" className="text-sm hover:underline">
+                  Approvals
+                </Link>
+              ) : null}
               <span className="text-sm text-muted-foreground">Hi, {user.name}</span>
               <LogoutButton />
             </>
