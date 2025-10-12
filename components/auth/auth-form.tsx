@@ -33,8 +33,8 @@ export function LoginForm() {
       setError(b?.error || "Login failed")
       return
     }
-    router.push("/dashboard")
-    console.log("done")
+    // Force a full page reload to update the navbar
+    window.location.href = "/dashboard"
   }
 
   return (
