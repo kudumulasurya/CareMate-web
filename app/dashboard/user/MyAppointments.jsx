@@ -51,7 +51,7 @@ export default function MyAppointments() {
     setCancelling(appointmentId)
     try {
       const response = await fetch(`/api/appointments/${appointmentId}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'cancelled' })
       })
