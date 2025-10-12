@@ -1,12 +1,32 @@
-import { requireAuth } from "@/lib/auth"
+'use client'
 
-export default async function UserDashboard() {
-  const auth = await requireAuth(["user"])
-  if (!auth) return null
+import React, { useState } from 'react';
+import Sidebar from '@/components/Sidebar';
+import MainDashboard from './Dashboard'
+import Prediction from './Prediction'
+import Appointments from './Appointments';
+import MyAppointments from './MyAppointments';
+import Reports from './Reports'
+import Profile from './Profile'
+
+export default function Dashboard() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
   return (
-    <main className="max-w-5xl mx-auto p-6 grid gap-6">
-      <h1 className="text-2xl font-semibold">My Dashboard</h1>
-      <p className="text-muted-foreground">Upcoming appointments and prescriptions appear here.</p>
-    </main>
-  )
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      <div className="flex-1 overflow-y-auto">
+
+        <div className="p-8">
+          {activeTab === 'dashboard' && <MainDashboard />}
+          {activeTab === 'prediction' && <Prediction />}
+          {activeTab === 'appointments' && <Appointments />}
+          {activeTab === 'my-appointments' && <MyAppointments />}
+          {activeTab === 'reports' && <Reports />}
+          {activeTab === 'profile' && <Profile />}
+        </div>
+      </div>
+    </div>
+  );
 }
