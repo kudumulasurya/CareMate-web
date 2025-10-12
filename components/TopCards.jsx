@@ -1,13 +1,26 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Activity, Calendar, FileText } from 'lucide-react';
 
 export default function TopCards() {
+    const [stats, setStats] = useState({
+        upcomingAppointments: 0,
+        totalPredictions: 0,
+        activeReminders: 0
+    });
+
+    useEffect(() => {
+        fetch('/api/dashboard/stats')
+            .then(res => res.json())
+            .then(data => setStats(data))
+            .catch(err => console.error('Error fetching stats:', err));
+    }, []);
+
     const cards = [
         {
             title: 'AI Disease Prediction',
-            description: 'Get instant health insights',
+            description: `${stats.totalPredictions} predictions made`,
             icon: Activity,
             gradient: 'from-blue-50 to-blue-100',
             border: 'border-blue-200',
@@ -16,7 +29,7 @@ export default function TopCards() {
         },
         {
             title: 'Book Appointment',
-            description: 'Schedule with specialists',
+            description: `${stats.upcomingAppointments} upcoming`,
             icon: Calendar,
             gradient: 'from-green-50 to-green-100',
             border: 'border-green-200',
@@ -24,8 +37,8 @@ export default function TopCards() {
             bgColor: 'bg-green-500'
         },
         {
-            title: 'My Reports',
-            description: 'View medical history',
+            title: 'My Reminders',
+            description: `${stats.activeReminders} active reminders`,
             icon: FileText,
             gradient: 'from-purple-50 to-purple-100',
             border: 'border-purple-200',
