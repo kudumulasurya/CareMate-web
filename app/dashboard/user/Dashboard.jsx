@@ -1,10 +1,10 @@
 import TopCards from '@/components/TopCards';
-import Appointments from '@/components/Appointments';
-import Predictions from '@/components/Predictions';
-import HealthAnalytics from '@/components/HealthAnalytics';
-import HealthTips from '@/components/HealthTips';
-import HealthMetrics from '@/components/HealthMetrics';
-import Reminders from '@/components/Reminders';
+import Appointments from '@/components/Dashboard/Appointments';
+import Predictions from '@/components/Dashboard/Predictions';
+import HealthAnalytics from '@/components/Dashboard/HealthAnalytics';
+import HealthTips from '@/components/Dashboard/HealthTips';
+import HealthMetrics from '@/components/Dashboard/HealthMetrics';
+import Reminders from '@/components/Dashboard/Reminders';
 
 export default function MainDashboard() {
   return (
